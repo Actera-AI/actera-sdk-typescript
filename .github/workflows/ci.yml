@@ -1,0 +1,110 @@
+name: ci
+'on':
+  push:
+    branches:
+      - main
+  pull_request: null
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    strategy:
+      matrix:
+        node:
+          - 22
+          - 24
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        timeout-minutes: 5
+      - run: pnpm check
+        timeout-minutes: 5
+      - run: pnpm format:check
+        timeout-minutes: 5
+      - run: pnpm generate:api
+        timeout-minutes: 5
+      - run: git diff --exit-code
+        timeout-minutes: 5
+    needs:
+      - distribution
+    if: ${{ needs.distribution.outputs.code == 'true' }}
+    timeout-minutes: 15
+  distribution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Test CI selection and release safety
+        run: node --test .github/scripts/*.test.mjs
+        timeout-minutes: 2
+      - name: Select checks from the complete change range
+        id: changes
+        run: node .github/scripts/changes.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        timeout-minutes: 5
+      - run: node scripts/check-distribution.mjs
+        timeout-minutes: 5
+      - name: Check publication history and regression cases
+        run: node scripts/check-publication.mjs --history && node --test scripts/publication.test.mjs
+        timeout-minutes: 5
+      - run: bash scripts/scan-secrets.sh
+        timeout-minutes: 5
+    outputs:
+      code: ${{ steps.changes.outputs.code }}
+    timeout-minutes: 15
+  ci-result:
+    if: ${{ always() }}
+    needs:
+      - distribution
+      - verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every selected check to pass
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          node <<'NODE'
+          const needs = JSON.parse(process.env.NEEDS);
+          const plan = needs["distribution"].outputs;
+          const checks = {"distribution": "-", "verify": "code"};
+          for (const [job, flag] of Object.entries(checks)) {
+            const required = flag === '-' || (flag.startsWith('!') ? plan[flag.slice(1)] !== 'true' : plan[flag] === 'true');
+            if (needs[job].result !== (required ? 'success' : 'skipped')) throw new Error(`${job}: ${needs[job].result}`);
+          }
+          NODE
+        timeout-minutes: 5
+  release-ready:
+    if:
+      ${{ needs.distribution.outputs.code == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      }}
+    needs:
+      - distribution
+      - ci-result
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - run: echo "Full CI passed for $GITHUB_SHA; releases may reuse this exact commit."
+        timeout-minutes: 5
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true

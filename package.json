@@ -1,0 +1,76 @@
+{
+  "name": "@actera/sdk",
+  "version": "0.0.1",
+  "description": "Customer-side authorization and managed execution for Actera",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Actera-AI/actera-sdk-typescript.git"
+  },
+  "homepage": "https://github.com/Actera-AI/actera-sdk-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/Actera-AI/actera-sdk-typescript/issues"
+  },
+  "keywords": [
+    "actera",
+    "authorization",
+    "policy",
+    "mcp",
+    "agents"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "pnpm@11.19.0",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/index.d.ts",
+      "import": "./dist/mcp/index.js"
+    },
+    "./mcp/node": {
+      "types": "./dist/mcp/node.d.ts",
+      "import": "./dist/mcp/node.js"
+    },
+    "./execution": {
+      "types": "./dist/execution.d.ts",
+      "import": "./dist/execution.js"
+    }
+  },
+  "scripts": {
+    "generate:api": "node scripts/check-contract.mjs && openapi-typescript contract/actera.openapi.json -o src/generated/schema.ts",
+    "build": "node scripts/clean-dist.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.browser.json --pretty false && tsc -p tsconfig.node.json --pretty false",
+    "test": "vitest run --dir test",
+    "prepack": "pnpm build",
+    "check:contract": "node scripts/check-contract.mjs",
+    "check:package": "node scripts/check-package.mjs",
+    "lint": "eslint src test",
+    "format:check": "prettier --check src test package.json tsconfig*.json eslint.config.mjs",
+    "check": "pnpm check:contract && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:package"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11",
+    "eslint": "10.10.0",
+    "@eslint/js": "10.0.1",
+    "typescript-eslint": "8.70.0",
+    "prettier": "3.9.6"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

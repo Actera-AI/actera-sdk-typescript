@@ -1,0 +1,7 @@
+{
+  "version": "0.7.0",
+  "schema": "actera.openapi.json",
+  "sha256": "242d15f20f3bd1b1105817cd79c32850dc9bd435ca319fb22b68fbcf3a7e63e4",
+  "repository": "byn243/actera-api",
+  "tag": "v0.7.0"
+}

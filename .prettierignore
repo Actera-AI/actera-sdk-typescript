@@ -1,0 +1,4 @@
+src/generated/
+contract/
+dist/
+node_modules/

@@ -1,0 +1,104 @@
+name: release
+'on':
+  push:
+    tags:
+      - v*
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag whose exact commit passed full CI on main
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  plan:
+    if:
+      ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name
+      == github.repository && (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'))
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      publish: ${{ steps.plan.outputs.publish }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - id: plan
+        name: Reuse successful CI for the exact tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/scripts/release-plan.mjs
+        timeout-minutes: 5
+  release:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish-${{ matrix.tag }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.sha }}
+          fetch-depth: 0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Require clean publication history
+        run: node scripts/check-publication.mjs --history
+        timeout-minutes: 5
+      - run: pnpm install --frozen-lockfile
+        timeout-minutes: 5
+      - name: Verify release version
+        run: node -e "if ('v'+JSON.parse(require('fs').readFileSync('package.json')).version !== process.env.RELEASE_TAG) process.exit(1)"
+        timeout-minutes: 5
+      - run: pnpm build
+        timeout-minutes: 5
+      - run: npm pack --ignore-scripts
+        timeout-minutes: 5
+      - run: sha256sum *.tgz > SHA256SUMS
+        timeout-minutes: 5
+      - name: Reject a moved or already published release tag
+        id: ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/scripts/release-plan.mjs --check-tag
+        timeout-minutes: 5
+      - name: Publish GitHub release archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$RELEASE_TAG" *.tgz SHA256SUMS --verify-tag --generate-notes
+        if: ${{ steps.ready.outputs.publish == 'true' }}
+        timeout-minutes: 5
+    if: ${{ needs.plan.outputs.publish == 'true' }}
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    timeout-minutes: 10
+    env:
+      RELEASE_TAG: ${{ matrix.tag }}
+      RELEASE_SHA: ${{ matrix.sha }}
+concurrency:
+  group: release-${{ github.event.workflow_run.head_sha || github.event.inputs.tag || github.sha }}
+  cancel-in-progress: false

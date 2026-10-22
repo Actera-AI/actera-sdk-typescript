@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.tools/
+.dev/
+.env
+.env.*
+coverage/
+*.tgz
+*.log
+*.tsbuildinfo

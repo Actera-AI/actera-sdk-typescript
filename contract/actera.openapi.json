@@ -1,0 +1,2205 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Actera Customer SDK API",
+    "description": "Supported customer-side authorization and managed execution operations.",
+    "version": "v1"
+  },
+  "tags": [
+    {
+      "name": "Enforcement",
+      "description": "Authorize real agent actions and record observational activity."
+    },
+    {
+      "name": "Execution",
+      "description": "Trusted-host operations for captured action intents and execution reporting."
+    }
+  ],
+  "paths": {
+    "/v1/action-intents": {
+      "get": {
+        "summary": "List action intents",
+        "description": "Lists captured intents, optionally filtered for a trusted host and execution states.",
+        "operationId": "ExecutionService_ListActionIntents",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/acteraApiV1ListActionIntentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "statuses",
+            "in": "query",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "host_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page_size",
+            "description": "Zero uses 50. The server caps larger values at 100 and rejects negatives.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page_token",
+            "description": "Opaque token from the preceding response. Filters must remain unchanged.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/v1/action-intents/{intent_id}": {
+      "get": {
+        "summary": "Get an action intent",
+        "description": "Returns one captured managed-call intent and its customer execution state.",
+        "operationId": "ExecutionService_GetActionIntent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/acteraApiV1GetActionIntentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/v1/action-intents/{intent_id}/cancel": {
+      "post": {
+        "summary": "Cancel an unclaimed action intent",
+        "description": "Cancels a captured or ready intent and releases its holds. Execution already claimed cannot be cancelled.",
+        "operationId": "ExecutionService_CancelActionIntent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/acteraApiV1CancelActionIntentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1Cancellation"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/v1/action-intents/{intent_id}/claim": {
+      "post": {
+        "summary": "Claim action execution",
+        "description": "Trusted-host operation that atomically claims the sole dispatch attempt for an approved or allowed captured intent.",
+        "operationId": "ExecutionService_ClaimActionExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/acteraApiV1ClaimActionExecutionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1ExecutionClaim"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/v1/action-intents/{intent_id}/report": {
+      "post": {
+        "summary": "Report action execution",
+        "description": "Trusted-host operation that records a completed, failed, or unknown downstream outcome for a claimed attempt.",
+        "operationId": "ExecutionService_ReportActionExecution",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/acteraApiV1ReportActionExecutionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1ExecutionReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Execution"
+        ]
+      }
+    },
+    "/v1/agents/{agent_id}/readiness": {
+      "get": {
+        "summary": "Read agent readiness",
+        "description": "Returns readiness for the credential's bound agent only.",
+        "operationId": "AgentAccessService_GetAgentReadiness",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1GetAgentReadinessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Agent Access"
+        ]
+      }
+    },
+    "/v1/decisions": {
+      "post": {
+        "summary": "Evaluate an agent action",
+        "description": "Creates one idempotent authorization decision.",
+        "operationId": "DecisionIngestionService_CreateDecision",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1CustomerDecision"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/acteraApiV1CreateDecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Enforcement"
+        ]
+      }
+    },
+    "/v1/decisions/{decision_id}/reports": {
+      "post": {
+        "summary": "Record a Decision report",
+        "description": "Appends a reported execution outcome to a Decision. Successful execution contributes usage once without changing the policy result.",
+        "operationId": "DecisionIngestionService_RecordDecisionReport",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1DecisionReport"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Activity recorded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1DecisionReport"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Actera-Workspace-Id",
+            "description": "Workspace UUID selected by the authenticated principal.",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1RecordDecisionReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Enforcement"
+        ]
+      }
+    },
+    "/v1/decisions/{decision_id}/status": {
+      "get": {
+        "summary": "Read a decision status",
+        "description": "Returns a minimal status projection for a Decision of the credential's bound agent.",
+        "operationId": "AgentAccessService_GetDecisionStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1GetDecisionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "Agent Access"
+        ]
+      }
+    },
+    "/v1/reviewer-links": {
+      "post": {
+        "summary": "Start a reviewer link",
+        "description": "Starts a browser-mediated reviewer grant bound to the machine key and agent.",
+        "operationId": "AgentAccessService_StartReviewerLink",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1StartReviewerLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1StartReviewerLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "Agent Access"
+        ]
+      }
+    },
+    "/v1/reviewer-links/status": {
+      "get": {
+        "summary": "Check reviewer link status",
+        "description": "Requires the short-lived reviewer token and returns only whether its browser grant is linked.",
+        "operationId": "AgentAccessService_GetReviewerLinkStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1GetReviewerLinkStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "An operation-level permission check denied the actor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with current authoritative state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "The request body is too large.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required service is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "The request failed. Inspect the machine-readable code and optional field errors.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1Error"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Agent Access"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8080"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "acteraApiV1CancelActionIntentResponse": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "$ref": "#/components/schemas/v1CustomerActionIntent"
+          }
+        }
+      },
+      "acteraApiV1ClaimActionExecutionResponse": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1CustomerActionIntent"
+              }
+            ]
+          },
+          "dispatch_granted": {
+            "type": "boolean"
+          },
+          "attempt_id": {
+            "type": "string"
+          },
+          "downstream_idempotency_key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dispatch_granted",
+          "attempt_id",
+          "downstream_idempotency_key"
+        ]
+      },
+      "acteraApiV1CreateDecisionRequest": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "MONITORING records policy results without admission or approvals. Default: ENFORCING."
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "agent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1Actor"
+              }
+            ]
+          },
+          "action": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1Action"
+              }
+            ]
+          },
+          "context": {
+            "type": "object",
+            "description": "Flexible caller-supplied facts. Nested policy fields are discovered from\nobserved values and addressed by their exact JSON paths.",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "intended_call": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1IntendedCall"
+              }
+            ]
+          }
+        }
+      },
+      "acteraApiV1CreateDecisionResponse": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/v1CustomerDecision"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "acteraApiV1GetActionIntentResponse": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1CustomerActionIntent"
+              }
+            ]
+          }
+        }
+      },
+      "acteraApiV1ListActionIntentsResponse": {
+        "type": "object",
+        "properties": {
+          "intents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/v1CustomerActionIntent"
+            }
+          },
+          "next_page_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "intents",
+          "next_page_token"
+        ]
+      },
+      "acteraApiV1RecordDecisionReportResponse": {
+        "type": "object",
+        "properties": {
+          "report": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1DecisionReport"
+              }
+            ]
+          }
+        }
+      },
+      "acteraApiV1ReportActionExecutionResponse": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1CustomerActionIntent"
+              }
+            ]
+          }
+        }
+      },
+      "v1RecordDecisionReportRequest": {
+        "type": "object",
+        "properties": {
+          "idempotency_key": {
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/v1ExecutionOutcome"
+          },
+          "agent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1Actor"
+              }
+            ]
+          },
+          "action": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1Action"
+              }
+            ]
+          },
+          "context": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "decision_id": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "protobufNullValue": {
+        "type": "string",
+        "enum": [
+          "NULL_VALUE"
+        ],
+        "default": "NULL_VALUE",
+        "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+      },
+      "v1Action": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Attributes are supplied by the caller in the action's native shape. Actera\ndoes not prescribe domain-specific fields such as amount or currency.",
+            "nullable": true,
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "v1ActionIntentHandle": {
+        "type": "object",
+        "properties": {
+          "intent_id": {
+            "type": "string"
+          },
+          "decision_id": {
+            "type": "string"
+          },
+          "operation_key": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "approval_url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "v1Actor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "v1Cancellation": {
+        "type": "object",
+        "properties": {
+          "idempotency_key": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "v1CustomerActionIntent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "decision_id": {
+            "type": "string"
+          },
+          "workspace_id": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "intended_call": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1IntendedCall"
+              }
+            ]
+          },
+          "invocation_fingerprint": {
+            "type": "string"
+          },
+          "execution_status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "format": "int64"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "attempt_id": {
+            "type": "string"
+          },
+          "downstream_idempotency_key": {
+            "type": "string"
+          },
+          "result": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "external_receipt": {
+            "type": "string"
+          },
+          "error_code": {
+            "type": "string"
+          },
+          "error_detail": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "handle": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1ActionIntentHandle"
+              }
+            ]
+          }
+        },
+        "description": "CustomerActionIntent exposes only the fields a trusted host needs to\nresume, claim, report, and reconcile execution.",
+        "required": [
+          "id",
+          "decision_id",
+          "workspace_id",
+          "agent_id",
+          "invocation_fingerprint",
+          "execution_status",
+          "version",
+          "attempt_id",
+          "downstream_idempotency_key",
+          "external_receipt",
+          "error_code",
+          "error_detail"
+        ]
+      },
+      "v1CustomerDecision": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "workspace_id": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "action_type": {
+            "type": "string"
+          },
+          "effect": {
+            "$ref": "#/components/schemas/v1Effect"
+          },
+          "status": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "action_intent": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/v1CustomerActionIntent"
+              }
+            ]
+          }
+        },
+        "description": "CustomerDecision contains the authorization result and execution handle\nneeded by a trusted host. Use the decision status endpoint to track subsequent changes.",
+        "required": [
+          "id",
+          "workspace_id",
+          "agent_id",
+          "action_type",
+          "mode",
+          "effect",
+          "status",
+          "explanation",
+          "idempotency_key"
+        ]
+      },
+      "v1DecisionReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "workspace_id": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/v1ExecutionOutcome"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "action": {
+            "$ref": "#/components/schemas/v1Action"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "decision_id": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "idempotency_key",
+          "agent_id",
+          "decision_id",
+          "action",
+          "context",
+          "occurred_at",
+          "recorded_at",
+          "outcome",
+          "details"
+        ]
+      },
+      "v1Effect": {
+        "type": "string",
+        "enum": [
+          "UNSPECIFIED",
+          "ALLOW",
+          "REQUIRE_APPROVAL",
+          "BLOCK"
+        ],
+        "default": "UNSPECIFIED"
+      },
+      "v1Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "field_errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/v1FieldError"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "code",
+          "field_errors"
+        ]
+      },
+      "v1ExecutionClaim": {
+        "type": "object",
+        "properties": {
+          "invocation_fingerprint": {
+            "type": "string"
+          },
+          "claim_request_id": {
+            "type": "string"
+          },
+          "host_id": {
+            "type": "string"
+          }
+        }
+      },
+      "v1ExecutionOutcome": {
+        "type": "string",
+        "enum": [
+          "OUTCOME_UNSPECIFIED",
+          "SUCCESS",
+          "FAILURE",
+          "CANCELLED",
+          "UNKNOWN"
+        ],
+        "default": "OUTCOME_UNSPECIFIED",
+        "description": "Executor-reported result, separate from authorization or proof of business effect."
+      },
+      "v1ExecutionReport": {
+        "type": "object",
+        "properties": {
+          "attempt_id": {
+            "type": "string"
+          },
+          "report_key": {
+            "type": "string"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/v1ExecutionOutcome"
+          },
+          "result": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "external_receipt": {
+            "type": "string"
+          },
+          "error_code": {
+            "type": "string"
+          },
+          "error_detail": {
+            "type": "string"
+          }
+        }
+      },
+      "v1FieldError": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field"
+        ]
+      },
+      "v1GetAgentReadinessResponse": {
+        "type": "object",
+        "properties": {
+          "agent_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "ready": {
+            "type": "boolean",
+            "description": "True when the bound agent is registered and can send Decisions."
+          }
+        }
+      },
+      "v1GetDecisionStatusResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "action_type": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "v1GetReviewerLinkStatusResponse": {
+        "type": "object",
+        "properties": {
+          "linked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "v1IntendedCall": {
+        "type": "object",
+        "properties": {
+          "envelope_schema_version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "adapter_kind": {
+            "type": "string"
+          },
+          "adapter_version": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "tool_name": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "host_id": {
+            "type": "string"
+          },
+          "host_operation_id": {
+            "type": "string"
+          },
+          "logical_tool_call_id": {
+            "type": "string"
+          },
+          "operation_key": {
+            "type": "string"
+          },
+          "target_id": {
+            "type": "string"
+          },
+          "target_binding_revision": {
+            "type": "string"
+          },
+          "target_account_id": {
+            "type": "string"
+          },
+          "credential_reference": {
+            "type": "string"
+          },
+          "execution_principal_id": {
+            "type": "string"
+          },
+          "required_scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "IntendedCall is a validated, reconstructable execution envelope. It contains\nno credentials or callbacks: credential_reference names host-managed state."
+      },
+      "v1StartReviewerLinkRequest": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "v1StartReviewerLinkResponse": {
+        "type": "object",
+        "properties": {
+          "approval_token": {
+            "type": "string"
+          },
+          "browser_url": {
+            "type": "string"
+          },
+          "workspace_id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
