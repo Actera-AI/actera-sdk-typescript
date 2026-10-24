@@ -1,6 +1,6 @@
 {
   "name": "@actera-ai/sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Customer-side authorization and managed execution for Actera",
   "license": "Apache-2.0",
   "repository": {

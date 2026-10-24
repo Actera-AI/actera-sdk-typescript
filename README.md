@@ -50,13 +50,13 @@ including late or duplicate reports.
 ## Usage
 
 This server-side example requests a decision. It does not dispatch the action.
-Set `ACTERA_API_URL` and `ACTERA_API_KEY` in your application's environment.
+Set `ACTERA_API_KEY` in your application's environment. The client connects to
+the production API at `https://app.actera.dev` unless you pass `baseUrl`.
 
 ```ts
 import { ActeraClient, fromApiKey } from '@actera-ai/sdk'
 
 const client = new ActeraClient({
-  baseUrl: process.env.ACTERA_API_URL!,
   credentials: fromApiKey(process.env.ACTERA_API_KEY!),
 })
 const agent = client.agent({ agentId: 'payments-agent' })
@@ -114,7 +114,6 @@ import { createInvocationContext } from '@actera-ai/sdk/mcp/node'
 
 const invocation = createInvocationContext()
 const agent = new ActeraClient({
-  baseUrl: process.env.ACTERA_API_URL!,
   credentials: fromApiKey(process.env.ACTERA_API_KEY!),
 }).agent({ agentId: 'support-agent' })
 

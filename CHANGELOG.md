@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.3
+
+`ActeraClient` connects to the production API at `https://app.actera.dev` when
+`baseUrl` is omitted. The URL is exported as `defaultBaseUrl`.
+
 ## 0.0.2
 
 Published to npm as `@actera-ai/sdk`. Imports change from `@actera/sdk`, the name
