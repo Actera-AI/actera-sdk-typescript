@@ -18,7 +18,7 @@ are listed in [CHANGELOG.md](CHANGELOG.md). Pin an exact version.
 Requires Node.js 22 or later for development and server-side use.
 
 ```sh
-npm install --save-exact @actera/sdk
+npm install --save-exact @actera-ai/sdk
 ```
 
 Versions published from CI carry npm provenance, which links each version to
@@ -53,7 +53,7 @@ This server-side example requests a decision. It does not dispatch the action.
 Set `ACTERA_API_URL` and `ACTERA_API_KEY` in your application's environment.
 
 ```ts
-import { ActeraClient, fromApiKey } from '@actera/sdk'
+import { ActeraClient, fromApiKey } from '@actera-ai/sdk'
 
 const client = new ActeraClient({
   baseUrl: process.env.ACTERA_API_URL!,
@@ -82,12 +82,12 @@ projections for that agent. Reviewer linking uses
 client for `getReviewerLinkStatus()`. The reviewer token can approve or reject
 only eligible Decisions in its bound workspace and agent.
 
-| Import                  | Provides                                          |
-| ----------------------- | ------------------------------------------------- |
-| `@actera/sdk`           | Decisions, host reports, and action intents       |
-| `@actera/sdk/execution` | Managed execution with a host-supplied dispatcher |
-| `@actera/sdk/mcp`       | MCP interception and approval continuation        |
-| `@actera/sdk/mcp/node`  | Node.js MCP transport helpers                     |
+| Import                     | Provides                                          |
+| -------------------------- | ------------------------------------------------- |
+| `@actera-ai/sdk`           | Decisions, host reports, and action intents       |
+| `@actera-ai/sdk/execution` | Managed execution with a host-supplied dispatcher |
+| `@actera-ai/sdk/mcp`       | MCP interception and approval continuation        |
+| `@actera-ai/sdk/mcp/node`  | Node.js MCP transport helpers                     |
 
 Managed execution requires a successful claim before dispatch. The host owns
 durable state, scheduling, provider reconciliation, and outcome classification.
@@ -108,9 +108,9 @@ comes from your host; on Node.js, `createInvocationContext()` provides an
 
 ```ts
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { ActeraClient, fromApiKey } from '@actera/sdk'
-import { createActeraAuthorization, interceptMcpClient } from '@actera/sdk/mcp'
-import { createInvocationContext } from '@actera/sdk/mcp/node'
+import { ActeraClient, fromApiKey } from '@actera-ai/sdk'
+import { createActeraAuthorization, interceptMcpClient } from '@actera-ai/sdk/mcp'
+import { createInvocationContext } from '@actera-ai/sdk/mcp/node'
 
 const invocation = createInvocationContext()
 const agent = new ActeraClient({
@@ -186,7 +186,7 @@ The release workflow can also be retried manually with an existing version tag.
 
 Update `package.json` and [CHANGELOG.md](CHANGELOG.md), then tag the reviewed
 commit `v<version>`. CI validates the source and packed package, publishes that
-archive to npm as `@actera/sdk` through trusted publishing, and attaches the same
+archive to npm as `@actera-ai/sdk` through trusted publishing, and attaches the same
 archive with its checksums to a GitHub release. No npm token is stored. A version
 already on npm is skipped, so a failed release can be retried. SDK versions are
 independent of backend and contract versions.
@@ -196,9 +196,9 @@ first version is published by a maintainer. After the first release succeeds,
 download its archive, check it against `SHA256SUMS`, and publish that file:
 
 ```sh
-gh release download v0.0.1 --repo Actera-AI/actera-sdk-typescript
+gh release download v0.0.2 --repo Actera-AI/actera-sdk-typescript
 sha256sum --check SHA256SUMS
-npm publish ./actera-sdk-0.0.1.tgz --access public
+npm publish ./actera-ai-sdk-0.0.2.tgz --access public
 ```
 
 Then, in the package settings on npmjs.com, add a trusted publisher for GitHub
