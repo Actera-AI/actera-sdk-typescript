@@ -1,6 +1,13 @@
 import { decisionFixture } from './fixtures.js'
 import { describe, expect, it, vi } from 'vitest'
-import { ActeraClient, ActeraHttpError, ActeraUnavailableError, fromApiKey, type Effect } from '../src/index.js'
+import {
+  ActeraClient,
+  ActeraHttpError,
+  ActeraUnavailableError,
+  defaultBaseUrl,
+  fromApiKey,
+  type Effect,
+} from '../src/index.js'
 
 const apiKey = 'actera_' + 'x'.repeat(40)
 
@@ -34,6 +41,20 @@ describe('ActeraClient', () => {
       '/v1/reviewer-links',
     ])
     expect(await requests[2]!.json()).toEqual({})
+  })
+
+  it('connects to the production API by default', async () => {
+    let request: Request | undefined
+    const client = new ActeraClient({
+      credentials: fromApiKey(apiKey),
+      fetch: async (input, init) => {
+        request = new Request(input, init)
+        return Response.json({ agent_id: 'agent', status: 'ACTIVE', ready: true })
+      },
+    })
+    await client.agent({ agentId: 'agent' }).getReadiness()
+    expect(request?.url).toBe(`${defaultBaseUrl}/v1/agents/agent/readiness`)
+    expect(defaultBaseUrl).toBe('https://app.actera.dev')
   })
 
   it('uses refreshable credentials and never sends a caller-selected workspace', async () => {

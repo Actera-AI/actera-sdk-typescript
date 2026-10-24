@@ -26,6 +26,9 @@ export type ReviewerLink = components['schemas']['v1StartReviewerLinkResponse']
 type CreateDecisionRequest = components['schemas']['acteraApiV1CreateDecisionRequest']
 const maxResponseBytes = 8 << 20
 
+/** The production Actera API, used when `baseUrl` is omitted. */
+export const defaultBaseUrl = 'https://app.actera.dev'
+
 export interface CredentialRequest {
   audience: string
   signal?: AbortSignal
@@ -72,7 +75,8 @@ export interface IntentPageInput {
   pageToken?: string
 }
 export interface ActeraClientOptions {
-  baseUrl: string
+  /** Defaults to the production API, `defaultBaseUrl`. */
+  baseUrl?: string
   credentials: CredentialProvider
   headers?: Record<string, string>
   fetch?: typeof fetch
@@ -130,7 +134,7 @@ export class ActeraClient {
   readonly #fetch: typeof fetch
 
   constructor(options: ActeraClientOptions) {
-    this.#baseUrl = validateBaseUrl(options.baseUrl)
+    this.#baseUrl = validateBaseUrl(options.baseUrl ?? defaultBaseUrl)
     if (!options.credentials || typeof options.credentials.getToken !== 'function')
       throw new ActeraError('ActeraClient requires credentials')
     for (const name of Object.keys(options.headers ?? {})) {
