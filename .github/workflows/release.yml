@@ -51,6 +51,8 @@ jobs:
       cancel-in-progress: false
     permissions:
       contents: write
+      # Trusted publishing: npm verifies this workflow through GitHub's OIDC token.
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -83,6 +85,37 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node .github/scripts/release-plan.mjs --check-tag
+        timeout-minutes: 5
+      - name: Require an npm CLI with trusted publishing
+        run: |
+          node -e "
+            const [major, minor, patch] = require('child_process').execSync('npm --version').toString().trim().split('.').map(Number)
+            if (major < 11 || (major === 11 && (minor < 5 || (minor === 5 && patch < 1)))) {
+              console.error('npm 11.5.1 or later is required for trusted publishing')
+              process.exit(1)
+            }"
+        if: ${{ steps.ready.outputs.publish == 'true' }}
+        timeout-minutes: 5
+      # Publishes the archive attached to the GitHub release, before that release
+      # exists, so a failed run can be retried: a version already on npm is skipped.
+      - name: Publish the same archive to npm
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version="${RELEASE_TAG#v}"
+          if ! existing=$(npm view "$name" name 2>&1); then
+            if grep -q E404 <<<"$existing"; then
+              echo "::notice::$name is not on npm yet. Publish this release's archive once by hand, then configure trusted publishing (README, Releases)."
+              exit 0
+            fi
+            echo "$existing"
+            exit 1
+          fi
+          if [ "$(npm view "$name@$version" version 2>/dev/null)" = "$version" ]; then
+            echo "::notice::$name@$version is already on npm."
+            exit 0
+          fi
+          npm publish ./*.tgz --access public --provenance --ignore-scripts
+        if: ${{ steps.ready.outputs.publish == 'true' }}
         timeout-minutes: 5
       - name: Publish GitHub release archive
         env:
