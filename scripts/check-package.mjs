@@ -13,6 +13,7 @@ assert.equal(manifest.private, undefined, 'A private package cannot be published
 assert.equal(manifest.publishConfig?.access, 'public')
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'actera-sdk-package-'))
 const consumer = path.join(scratch, 'consumer')
+const installed = (...parts) => path.join(consumer, 'node_modules', ...manifest.name.split('/'), ...parts)
 // Run the npm bundled with the current Node.js through Node itself, so no shell
 // is involved and the consumer install does not inherit the developer's or
 // package manager's npm_config_* environment.
@@ -73,13 +74,10 @@ try {
     consumer,
   )
   for (const file of names) {
-    const bytes = fs.readFileSync(path.join(consumer, 'node_modules', '@actera', 'sdk', file))
+    const bytes = fs.readFileSync(installed(file))
     assert.equal(inspectText(bytes.toString('utf8')), null, `Restricted content in packed file: ${file}`)
   }
-  const shippedSchema = fs.readFileSync(
-    path.join(consumer, 'node_modules', '@actera', 'sdk', 'dist', 'generated', 'schema.d.ts'),
-    'utf8',
-  )
+  const shippedSchema = fs.readFileSync(installed('dist', 'generated', 'schema.d.ts'), 'utf8')
   assert.match(shippedSchema, /"\/v1\/decisions"/)
   assert.match(shippedSchema, /DecisionIngestionService_CreateDecision/)
   assert.match(shippedSchema, /ExecutionService_ReportActionExecution/)
@@ -91,13 +89,13 @@ try {
     [
       '--input-type=module',
       '-e',
-      "for (const entry of ['@actera/sdk', '@actera/sdk/execution', '@actera/sdk/mcp', '@actera/sdk/mcp/node']) await import(entry)",
+      "for (const entry of ['@actera-ai/sdk', '@actera-ai/sdk/execution', '@actera-ai/sdk/mcp', '@actera-ai/sdk/mcp/node']) await import(entry)",
     ],
     consumer,
   )
   fs.writeFileSync(
     path.join(consumer, 'types.mts'),
-    "import { ActeraClient } from '@actera/sdk'\nimport { ActeraExecution } from '@actera/sdk/execution'\nimport { createActeraMcpContinuation } from '@actera/sdk/mcp'\nimport { createInvocationContext } from '@actera/sdk/mcp/node'\nvoid [ActeraClient, ActeraExecution, createActeraMcpContinuation, createInvocationContext]\n",
+    "import { ActeraClient } from '@actera-ai/sdk'\nimport { ActeraExecution } from '@actera-ai/sdk/execution'\nimport { createActeraMcpContinuation } from '@actera-ai/sdk/mcp'\nimport { createInvocationContext } from '@actera-ai/sdk/mcp/node'\nvoid [ActeraClient, ActeraExecution, createActeraMcpContinuation, createInvocationContext]\n",
   )
   run(
     process.execPath,
