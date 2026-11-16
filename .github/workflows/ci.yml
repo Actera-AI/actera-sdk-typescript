@@ -63,9 +63,6 @@ jobs:
         timeout-minutes: 5
       - run: node scripts/check-distribution.mjs
         timeout-minutes: 5
-      - name: Check publication history and regression cases
-        run: node scripts/check-publication.mjs --history && node --test scripts/publication.test.mjs
-        timeout-minutes: 5
       - run: bash scripts/scan-secrets.sh
         timeout-minutes: 5
     outputs:

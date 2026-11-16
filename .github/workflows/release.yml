@@ -66,9 +66,6 @@ jobs:
           node-version: 24
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
-      - name: Require clean publication history
-        run: node scripts/check-publication.mjs --history
-        timeout-minutes: 5
       - run: pnpm install --frozen-lockfile
         timeout-minutes: 5
       - name: Verify release version

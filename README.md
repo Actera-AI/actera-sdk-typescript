@@ -142,13 +142,15 @@ returned `isError` or threw, since neither proves the tool had no effect.
 Call options passed after the request, such as the MCP client's `signal` and
 `timeout`, bound the Actera request as well.
 
-MCP adapters require explicit `mode`, `onUnavailable`, and `classifyOutcome`
-choices. Only connectivity failures and HTTP 502/503/504 use the configured
-unavailability behavior. Authentication errors and malformed responses never
-silently permit execution. With a continuation configured, managed calls are
-dispatched through its `dispatch` function rather than the remaining interceptor
-chain, so interceptors placed after Actera do not see them. See the
-[execution tests](test/execution.test.ts) and [MCP tests](test/mcp.test.ts) for
+The optional `behavior` setting chooses `mode` (`enforce` or `monitor`) and
+`onUnavailable` (`deny`, `defer`, or `allow`) by default or per tool; without it,
+calls are enforced and denied when Actera is unavailable. A continuation
+requires `dispatch` and `classifyOutcome`. Only connectivity failures and HTTP
+502/503/504 use the configured unavailability behavior. Authentication errors
+and malformed responses never silently permit execution. With a continuation
+configured, managed calls are dispatched through its `dispatch` function rather
+than the remaining interceptor chain, so interceptors placed after Actera do not
+see them. See the [execution tests](test/execution.test.ts) and [MCP tests](test/mcp.test.ts) for
 complete lifecycle examples.
 
 ## Development
@@ -170,40 +172,11 @@ no backend credentials. Wire types are generated from the API contract pinned in
 
 ## Releases
 
-CI cancels superseded runs and skips the test matrix only for explicitly
-informational documentation changes. Distribution and secret checks still run.
-Main-branch selection includes changes since the last successful CI run, so a
-documentation push cannot hide cancelled code checks. **Run workflow** on `ci`
-forces all checks; `ci-result` is the aggregate check for branch protection.
-
-Releases reuse successful full CI for the exact tagged commit on `main`, including
-the `release-ready` check. They do not repeat the test suite. A tag pushed while CI
-is running is picked up when CI succeeds. A failed, cancelled or documentation-only
-run cannot authorize a release. Prefer tagging the current main commit after CI
-passes; to release a documentation-only commit, run `ci` manually on main first.
-The release workflow can also be retried manually with an existing version tag.
-
-Update `package.json` and [CHANGELOG.md](CHANGELOG.md), then tag the reviewed
-commit `v<version>`. CI validates the source and packed package, publishes that
-archive to npm as `@actera-ai/sdk` through trusted publishing, and attaches the same
-archive with its checksums to a GitHub release. No npm token is stored. A version
-already on npm is skipped, so a failed release can be retried. SDK versions are
-independent of backend and contract versions.
-
-npm accepts trusted publishing only for a package that already exists, so the
-first version is published by a maintainer. After the first release succeeds,
-download its archive, check it against `SHA256SUMS`, and publish that file:
-
-```sh
-gh release download v0.0.2 --repo Actera-AI/actera-sdk-typescript
-sha256sum --check SHA256SUMS
-npm publish ./actera-ai-sdk-0.0.2.tgz --access public
-```
-
-Then, in the package settings on npmjs.com, add a trusted publisher for GitHub
-Actions with organization `Actera-AI`, repository `actera-sdk-typescript` and
-workflow `release.yml`, and set publishing access to require two-factor
-authentication and disallow tokens. Later releases publish from CI.
+Update `package.json` and [CHANGELOG.md](CHANGELOG.md), then tag the commit
+`v<version>` after CI passes on `main`. The release workflow publishes that
+commit to npm as `@actera-ai/sdk` through trusted publishing and attaches the
+archive and its checksums to a GitHub release. SDK versions are independent of
+backend and contract versions.
 
 ## Security
 
