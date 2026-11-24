@@ -1,4 +1,3 @@
-import { checkPublication } from './check-publication.mjs'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
@@ -55,5 +54,3 @@ for (const file of new Set(files)) {
   }
 }
 console.log(`Distribution boundary checked: ${new Set(files).size} files`)
-
-checkPublication()

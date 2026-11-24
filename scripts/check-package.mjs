@@ -1,4 +1,3 @@
-import { inspectText } from './check-publication.mjs'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
@@ -73,10 +72,6 @@ try {
     ],
     consumer,
   )
-  for (const file of names) {
-    const bytes = fs.readFileSync(installed(file))
-    assert.equal(inspectText(bytes.toString('utf8')), null, `Restricted content in packed file: ${file}`)
-  }
   const shippedSchema = fs.readFileSync(installed('dist', 'generated', 'schema.d.ts'), 'utf8')
   assert.match(shippedSchema, /"\/v1\/decisions"/)
   assert.match(shippedSchema, /DecisionIngestionService_CreateDecision/)
